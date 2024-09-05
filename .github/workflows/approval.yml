@@ -1,0 +1,28 @@
+name: PR Approval and Workflow Execution
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Run Tests
+        run: echo "Running tests..."
+
+      - name: Wait for Approval Action
+        uses: arun291091/wait_for_approval_gha@v1
+        with:
+          base_repository_branch: 'main'  # Replace with your base branch name
+          github_org: 'TestCIOrganization'  # Replace with your GitHub organization
+          repository_name: 'backdoor'  # Replace with your repository name
+          pr_reviewer: 'admin'  # Replace with your reviewers
+          time_limit: 3600  # Wait for approval for 1 hour (3600 seconds)
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # Ensure GITHUB_TOKEN is set in your repo
+
+      - name: Proceed after approval
+        run: echo "PR has been approved. Proceeding with deployment or next steps."
